@@ -151,6 +151,8 @@ unique(mydata$Chick) # BEWARE OF USING unique()
 
 levels(mydata$Chick)
 
+View(mydata) # to view the dataset in a separate tab
+
 # EXERCISE 1
 # extract observations (a sample of the data frame)
 # corresponding to Chick 31
@@ -184,6 +186,81 @@ subset(mydata, Chick == 31) # same
 # EXERCISE 2
 # extract observations (a sample of the data frame)
 # corresponding to chicks above 20 days of age
+mydata[mydata$Time >= 20,]
+subset(x = mydata, subset = Time >= 20)
 
 # EXERCISE 3: calculate the mean of all weights in this
 # experiment
+mean(mydata$weight)
+
+
+# EXERCISE 4: calculate the median of the weigths for each
+# diet (four median values)
+str(mydata$Diet) # a factor
+levels(mydata$Diet) # the levels of a factor are its different
+# categories (a factor encodes a categorical / qualitative)
+# variable
+
+subset(mydata, Diet == "1")$weight
+subset(mydata, Diet == "1")$weight
+# the above outputs a vector of numerical values
+
+subset(x = mydata, subset = Diet == "1", select = "weight")
+# the above outputs a df with only one column
+
+median(subset(mydata, Diet == "1")$weight)
+median(subset(mydata, Diet == "2")$weight)
+median(subset(mydata, Diet == "3")$weight)
+median(subset(mydata, Diet == "4")$weight)
+# same solution with a for loop:
+for (i in seq(1,4))
+  print(median(subset(mydata, Diet == i)$weight))
+
+# we can also compute the inter-quartile range:
+for (i in seq(1,4))
+  print(IQR(subset(mydata, Diet == i)$weight))
+
+# summary() is a good tool to represent distributions
+summary()
+#### SIMPLE PLOTS ######
+hist(mydata$weight)
+par(bg='blue')
+boxplot(mydata$weight)
+# one can also have one boxplot per
+# category of a categorical variable
+# a.k.a a factor in R
+boxplot(weight ~ Diet, data = mydata)
+# the above reads:
+# plot the boxplot of weights grouped
+# by values of Diet.
+
+# abline() to draw lines on top of the
+# current plot
+abline(h = 131.25) # median of 3rd group
+abline(h = median(subset(mydata, Diet == "2")$weight), col='lightgrey', lwd = 5) # median of group 2
+
+abline(h = median(subset(mydata, Diet == "2")$weight), col='red', lwd = 2) # median of group 2
+
+par(bg="white")
+
+#### tabular forms ####
+
+# summary of a quantitative var:
+summary(mydata$weight)
+
+# summary of a qualitative var (counts):
+summary(mydata$Diet)
+
+# for categorical variables, use
+# table to build a contingency
+# table:
+table(mydata$Diet, mydata$Chick)
+
+# one can create data frames:
+medians = data.frame(diet=seq(1,4), median_weight = 0)
+
+for (i in seq(1,4))
+  medians[i,"median_weight"] = median(subset(mydata, Diet == i)$weight)
+
+# to save this table into a file:
+write.csv(x= medians, file ="table_for_Peter.csv",row.names = FALSE)
